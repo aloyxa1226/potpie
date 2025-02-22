@@ -1,6 +1,15 @@
 #!/bin/bash
 set -e
 
+# Activate virtual environment
+if [ -d "venv" ]; then
+    source venv/bin/activate
+else
+    echo "Error: Virtual environment not found. Please create it first using:
+    python3.10 -m venv venv"
+    exit 1
+fi
+
 source .env
 
 # Set up Service Account Credentials
@@ -26,11 +35,7 @@ done
 echo "Postgres is up - applying database migrations"
 
 
-# Verify virtual environment is active
-if [ -z "$VIRTUAL_ENV" ]; then
- echo "Error: No virtual environment is active. Please activate your virtual environment first."
- exit 1
-fi
+# Virtual environment is now activated automatically
 
 # Install python dependencies
 echo "Installing Python dependencies..."

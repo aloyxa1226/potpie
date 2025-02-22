@@ -7,6 +7,7 @@ from crewai import LLM
 from langchain_anthropic import ChatAnthropic
 from langchain_deepseek import ChatDeepSeek
 from langchain_openai.chat_models import ChatOpenAI
+from langchain_community.llms import Ollama
 from portkey_ai import PORTKEY_GATEWAY_URL, createHeaders
 
 from app.modules.key_management.secret_manager import SecretManager
@@ -50,6 +51,11 @@ class ProviderService:
                 id="deepseek",
                 name="DeepSeek",
                 description="An open-source AI company known for powerful chat and reasoning models.",
+            ),
+            ProviderInfo(
+                id="ollama",
+                name="Ollama",
+                description="A local LLM provider that runs models like Mistral and Llama2 on your machine.",
             ),
         ]
 
@@ -131,6 +137,22 @@ class ProviderService:
                 "langchain": {
                     "model": "deepseek/deepseek-r1",
                     "class": ChatDeepSeek,
+                },
+            },
+        },
+        "ollama": {
+            "small": {
+                "crewai": {"model": "ollama/deepseek-r1:1.5b"},
+                "langchain": {
+                    "model": "deepseek-r1:1.5b",
+                    "class": Ollama,
+                },
+            },
+            "large": {
+                "crewai": {"model": "ollama/llama2"},
+                "langchain": {
+                    "model": "llama2",
+                    "class": Ollama,
                 },
             },
         },
@@ -253,6 +275,8 @@ class ProviderService:
             return "Anthropic"
         elif isinstance(llm, ChatDeepSeek):
             return "DeepSeek"
+        elif isinstance(llm, Ollama):
+            return "Ollama"
         elif isinstance(llm, LLM):
             if llm.model.split("/")[0] == "openai":
                 return "OpenAI"
@@ -260,6 +284,8 @@ class ProviderService:
                 return "Anthropic"
             elif llm.model.split("/")[0] == "deepseek":
                 return "DeepSeek"
+            elif llm.model.split("/")[0] == "ollama":
+                return "Ollama"
         return "Unknown"
 
     async def get_global_ai_provider(self, user_id: str) -> str:
